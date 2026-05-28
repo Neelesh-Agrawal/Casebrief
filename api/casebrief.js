@@ -30,26 +30,49 @@ export default async function handler(req, res) {
         }))
     ];
 
-    const upstream = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: typeof body.model === 'string' && body.model.trim() ? body.model : 'llama-3.1-70b-versatile',
-        messages,
-        temperature: typeof body.temperature === 'number' ? body.temperature : 0.4,
-        max_tokens: typeof body.max_tokens === 'number' ? body.max_tokens : 1200
-      })
-    });
+    const requestedModel =
+      typeof body.model === 'string' && body.model.trim() ? body.model.trim() : 'llama-3.1-8b-instant';
+    const fallbackModel = 'llama-3.1-8b-instant';
 
-    const data = await upstream.json();
+    async function callGroq(model) {
+      const upstream = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: typeof body.temperature === 'number' ? body.temperature : 0.4,
+          max_tokens: typeof body.max_tokens === 'number' ? body.max_tokens : 1200
+        })
+      });
+      const data = await upstream.json().catch(() => ({}));
+      return { upstream, data };
+    }
+
+    let usedModel = requestedModel;
+    let { upstream, data } = await callGroq(usedModel);
 
     if (!upstream.ok) {
+      const detail = data?.error?.message || data?.message || JSON.stringify(data);
+      const looksLikeModelIssue =
+        upstream.status === 400 && /model|not found|does not exist|invalid/i.test(String(detail));
+
+      if (looksLikeModelIssue && usedModel !== fallbackModel) {
+        usedModel = fallbackModel;
+        ({ upstream, data } = await callGroq(usedModel));
+      }
+    }
+
+    if (!upstream.ok) {
+      const detail = data?.error?.message || data?.message || JSON.stringify(data);
       return res.status(upstream.status).json({
         error: 'Groq API call failed',
-        detail: data?.error?.message || data?.message || JSON.stringify(data)
+        detail,
+        requestedModel,
+        usedModel
       });
     }
 
@@ -57,6 +80,7 @@ export default async function handler(req, res) {
 
     // Keep response compatible with existing frontend parsing (Anthropic-style `content` blocks).
     return res.status(200).json({
+      usedModel,
       content: [{ type: 'text', text }]
     });
   } catch (error) {

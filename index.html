@@ -523,7 +523,7 @@ Audience: ${currentAud}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama-3.1-70b-versatile',
+          model: 'llama-3.1-8b-instant',
           max_tokens: 1200,
           system,
           messages: [{ role: 'user', content: userContent }]
@@ -531,6 +531,10 @@ Audience: ${currentAud}`;
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        const detail = data?.detail || data?.error || 'Request failed';
+        throw new Error(detail);
+      }
       const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
       const clean = raw.replace(/```json|```/g, '').trim();
       const p = JSON.parse(clean);
@@ -546,7 +550,7 @@ Audience: ${currentAud}`;
       clearInterval(lt);
       loading.classList.remove('on');
       emptyState.style.display = 'flex';
-      showErr('Something went wrong. Check your connection and try again.');
+      showErr((e && e.message) ? e.message : 'Something went wrong. Check your connection and try again.');
       btn.disabled = false;
     }
   }
