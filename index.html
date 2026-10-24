@@ -523,7 +523,8 @@ Audience: ${currentAud}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: 'openai/gpt-oss-20b',
+          reasoning_effort: 'low',
           max_tokens: 1200,
           system,
           messages: [{ role: 'user', content: userContent }]

@@ -30,9 +30,8 @@ export default async function handler(req, res) {
         }))
     ];
 
-    const requestedModel =
-      typeof body.model === 'string' && body.model.trim() ? body.model.trim() : 'llama-3.1-8b-instant';
-    const fallbackModel = 'llama-3.1-8b-instant';
+    const requestedModel = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
+    const fallbackModel = 'openai/gpt-oss-20b';
 
     async function callGroq(model) {
       const upstream = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -43,6 +42,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model,
+          reasoning_effort: 'low',
           messages,
           temperature: typeof body.temperature === 'number' ? body.temperature : 0.4,
           max_tokens: typeof body.max_tokens === 'number' ? body.max_tokens : 1200
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     if (!upstream.ok) {
       const detail = data?.error?.message || data?.message || JSON.stringify(data);
       const looksLikeModelIssue =
-        upstream.status === 400 && /model|not found|does not exist|invalid/i.test(String(detail));
+        [400, 404].includes(upstream.status) && /model|not found|does not exist|invalid/i.test(String(detail));
 
       if (looksLikeModelIssue && usedModel !== fallbackModel) {
         usedModel = fallbackModel;
