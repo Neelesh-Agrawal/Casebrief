@@ -107,7 +107,7 @@ footer a{color:inherit}
       <div class="field"><label for="whatBuilt">What did you build? <span class="req">Required</span></label><textarea id="whatBuilt" rows="3" placeholder="e.g. A tool that turns one brand colour into a full token system with exports."></textarea></div>
       <div class="field"><label for="whyBuilt">What problem does it solve? <span class="req">Required</span></label><textarea id="whyBuilt" rows="3" placeholder="e.g. Designers lose hours building shade scales by hand and they rarely check contrast."></textarea></div>
       <div class="field"><label for="decisions">Key design decisions <span>Recommended</span></label><textarea id="decisions" rows="3" placeholder="What you tried, what you changed, and why."></textarea><p class="hint">This is what makes the writing sound like a designer, not a feature list.</p></div>
-      <div class="field"><label for="outcome">Outcome or result <span>Optional</span></label><textarea id="outcome" rows="2" placeholder="e.g. Shipped in a day, used on two client projects."></textarea></div>
+      <div class="field"><label for="outcome">Outcome or result <span>Optional</span></label><textarea id="outcome" rows="2" placeholder="e.g. Shipped in a day, 200 people tried it in the first week."></textarea></div>
       <div class="field"><label for="tools">Tools &amp; stack <span>Optional</span></label><input type="text" id="tools" placeholder="e.g. Figma, Claude Code, Vercel"></div>
       <div class="field"><label>Who will read it?</label><div class="chips" id="aud"><button type="button" data-v="portfolio" aria-pressed="true">Portfolio</button><button type="button" data-v="hiring" aria-pressed="false">Hiring manager</button><button type="button" data-v="client" aria-pressed="false">Client</button><button type="button" data-v="linkedin" aria-pressed="false">LinkedIn</button></div></div>
       <div class="field"><label>Voice</label><div class="chips" id="tone"><button type="button" data-v="confident" aria-pressed="true">Confident</button><button type="button" data-v="humble" aria-pressed="false">Humble</button><button type="button" data-v="playful" aria-pressed="false">Playful</button></div></div>
@@ -144,7 +144,7 @@ const EXAMPLE = {
   projectName: 'Colordump', whatBuilt: 'A web tool that turns one brand colour into a full token system: an even shade scale, a tinted neutral scale, light and dark semantic tokens, and code for CSS, Tailwind and Figma.',
   whyBuilt: 'Designers build shade scales by hand, the steps look uneven, and contrast is rarely checked until a developer complains.',
   decisions: 'Used OKLCH so steps look perceptually even. Kept the base colour fixed in the scale so brand teams trust it. Showed contrast on every swatch and a live UI preview so people judge colours in context, not as squares.',
-  outcome: 'Built in a day during Ship69, rebuilt later after using it on two client projects.', tools: 'Figma, Claude Code, Vercel',
+  outcome: 'Built in a day during Ship69, rebuilt in October 2026 with a contrast check on every shade and a share link.', tools: 'Figma, Claude Code, Vercel',
 };
 
 // ----- draft persistence -----
